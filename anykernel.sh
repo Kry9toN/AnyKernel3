@@ -9,12 +9,12 @@ do.devicecheck=1
 do.modules=0
 do.cleanup=1
 do.cleanuponabort=0
-device.name1=vince
+device.name1=heart
 device.name2=
 device.name3=
 device.name4=
 device.name5=
-supported.versions=9.0 - 10
+supported.versions=
 supported.patchlevels=
 '; } # end properties
 
