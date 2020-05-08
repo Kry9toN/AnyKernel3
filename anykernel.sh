@@ -10,12 +10,12 @@ do.modules=0
 do.systemless=0
 do.cleanup=1
 do.cleanuponabort=0
-device.name1=vince
-device.name2=
-device.name3=
+device.name1=G151
+device.name2=g151
+device.name3=A16C3H
 device.name4=
 device.name5=
-supported.versions=9.0 - 10
+supported.versions=9
 supported.patchlevels=
 '; } # end properties
 
