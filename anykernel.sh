@@ -4,7 +4,6 @@
 ## AnyKernel setup
 # begin properties
 properties() { '
-kernel.string=KryPtoN Kernel by @kry9ton Telegram and Github
 do.devicecheck=1
 do.modules=0
 do.systemless=0
