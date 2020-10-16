@@ -14,8 +14,6 @@ device.name2=curtana
 device.name3=excalibur
 device.name4=gram
 device.name5=
-supported.versions=10
-supported.patchlevels=
 '; } # end properties
 
 # shell variables
