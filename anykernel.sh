@@ -9,10 +9,10 @@ do.modules=0
 do.systemless=0
 do.cleanup=1
 do.cleanuponabort=0
-device.name1=joyeuse
-device.name2=curtana
-device.name3=excalibur
-device.name4=gram
+device.name1=sagit
+device.name2=chiron
+device.name3=
+device.name4=
 device.name5=
 '; } # end properties
 
