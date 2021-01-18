@@ -5,10 +5,12 @@
 OUTFD=/proc/self/fd/$2;
 ZIPFILE="$3";
 
-ps | grep zygote | grep -v grep >/dev/null && BOOTMODE=true || BOOTMODE=false;
+BOOTMODE=false;
+ps | grep zygote | grep -v grep >/dev/null && BOOTMODE=true;
 $BOOTMODE || ps -A 2>/dev/null | grep zygote | grep -v grep >/dev/null && BOOTMODE=true;
 
-$BOOTMODE && DIR=/sdcard || DIR=$(dirname "$ZIPFILE");
+DIR=/sdcard;
+$BOOTMODE || DIR=$(dirname "$ZIPFILE");
 
 test -d /postinstall/tmp && POSTINSTALL=/postinstall;
 test "$AKHOME" || AKHOME=$POSTINSTALL/tmp/anykernel;
@@ -40,7 +42,8 @@ mount_apex() {
   test -d /system/apex || return 1;
   local apex dest loop minorx num;
   setup_mountpoint /apex;
-  test -e /dev/block/loop1 && minorx=$($BB ls -l /dev/block/loop1 | $BB awk '{ print $6 }') || minorx=1;
+  minorx=1;
+  test -e /dev/block/loop1 && minorx=$($BB ls -l /dev/block/loop1 | $BB awk '{ print $6 }');
   num=0;
   for apex in /system/apex/*; do
     dest=/apex/$($BB basename $apex .apex);
@@ -158,10 +161,18 @@ setup_env() {
       local propdir propfile propval;
       for propdir in / /system_root /system /vendor /odm /product; do
         for propfile in default.prop build.prop; do
-          test "$propval" && break 2 || propval="$(file_getprop $propdir/$propfile $1 2>/dev/null)";
+          if [ "$propval" ]; then
+            break 2;
+          else
+            propval="$(file_getprop $propdir/$propfile $1 2>/dev/null)";
+          fi;
         done;
       done;
-      test "$propval" && echo "$propval" || echo "";
+      if [ "$propval" ]; then
+        echo "$propval";
+      else
+        echo "";
+      fi;
     }
   elif [ ! "$(getprop ro.build.type 2>/dev/null)" ]; then
     getprop() {
@@ -189,7 +200,7 @@ restore_env() {
 debugging() {
   case $(basename "$ZIPFILE" .zip) in
     *-debugging)
-      ui_print " " "Creating debugging archive in $DIR...";
+      ui_print "Creating debugging archive in $DIR...";
       test -f /tmp/recovery.log && local log=/tmp/recovery.log;
       $BB tar -czf "$DIR/anykernel3-$(date +%Y-%m-%d_%H%M%S)-debug.tgz" $AKHOME $log;
     ;;
@@ -219,14 +230,14 @@ do_devicecheck() {
   for testname in $(file_getprop anykernel.sh 'device.name.*'); do
     for devicename in $device $product $vendordevice $vendorproduct; do
       if [ "$devicename" == "$testname" ]; then
-        ui_print "$testname" " ";
+        ui_print "$testname";
         match=1;
         break 2;
       fi;
     done;
   done;
   if [ ! "$match" ]; then
-    abort " " "Unsupported device. Aborting...";
+    abort "Unsupported device. Aborting...";
   fi;
 }
 int2ver() {
@@ -260,9 +271,9 @@ do_versioncheck() {
     done;
   fi;
   if [ "$supported" ]; then
-    ui_print "$android_ver" " ";
+    ui_print "$android_ver";
   else
-    abort " " "Unsupported Android version. Aborting...";
+    abort "Unsupported Android version. Aborting...";
   fi;
 }
 do_levelcheck() {
@@ -283,9 +294,9 @@ do_levelcheck() {
     hi_lvl=9999-99;
   fi;
   if echo -e "$hi_lvl\n$lo_lvl\n$parsed_lvl" | $BB sort -g | $BB grep -n "$parsed_lvl" | $BB grep -q '^2:'; then
-    ui_print "$android_lvl" " ";
+    ui_print "$android_lvl";
   else
-    abort " " "Unsupported Android security patch level. Aborting...";
+    abort "Unsupported Android security patch level. Aborting...";
   fi;
 }
 dump_moduleinfo() {
@@ -311,7 +322,7 @@ do_modules() {
   local block modcon moddir modtarget module slot umask;
   if [ "$(file_getprop anykernel.sh do.systemless)" == 1 ]; then
     cd $AKHOME/modules;
-    ui_print " " "Creating kernel helper Magisk module...";
+    ui_print "Creating kernel helper Magisk module...";
     if [ -d /data/adb/magisk -a -f $AKHOME/split_img/.magisk ]; then
       umask=$(umask);
       umask 022;
@@ -330,7 +341,7 @@ do_modules() {
     fi;
   else
     cd $AKHOME/modules;
-    ui_print " " "Pushing modules...";
+    ui_print "Pushing modules...";
     if [ -d /dev/block/mapper ]; then
       for block in system vendor; do
         for slot in "" _a _b; do
@@ -373,7 +384,6 @@ do_modules() {
 }
 
 show_progress 1.34 4;
-ui_print " ";
 cleanup;
 mkdir -p $AKHOME/bin;
 cd $AKHOME;
@@ -402,17 +412,21 @@ fi;
 
 if [ -f banner ]; then
   ui_printfile banner;
-  ui_print " " " ";
 fi;
 
-KERNEL_STRING="$(file_getprop anykernel.sh kernel.string)";
-ui_print "$KERNEL_STRING";
+ui_print "=========================================";
+ui_print "    __ _______  _____  __________  _  __ ";
+ui_print "   / //_/ _ \ \/ / _ \/_  __/ __ \/ |/ / ";
+ui_print "  / ,< / , _/\  / ___/ / / / /_/ /    /  ";
+ui_print " /_/|_/_/|_| /_/_/    /_/  \____/_/|_/   ";
+ui_print "          _                    _         ";
+ui_print "         | |_____ _ _ _ _  ___| |        ";
+ui_print "         | / / -_) '_| ' \/ -_) |        ";
+ui_print "         |_\_\___|_| |_||_\___|_|        ";
+ui_print "=========================================";
 if [ -f version ]; then
-  ui_print " ";
   ui_printfile version;
-  ui_print " ";
 fi;
-ui_print " " "AnyKernel3 by osm0sis @ xda-developers" " " " ";
 
 setup_env;
 
@@ -420,7 +434,7 @@ do_devicecheck;
 do_versioncheck;
 do_levelcheck;
 
-ui_print "Installing...";
+ui_print "Patching boot image...";
 CORE=$($BB grep -oE 'ak.*core.sh' anykernel.sh);
 test -f tools/$CORE || $BB ln -s $AKHOME/tools/ak*-core.sh $AKHOME/tools/$CORE;
 PATH="$AKHOME/bin:$PATH" home=$AKHOME $BB ash anykernel.sh $2;
@@ -437,4 +451,5 @@ if [ "$(file_getprop anykernel.sh do.cleanup)" == 1 ]; then
   cleanup;
 fi;
 
-ui_print " " " " "Done!";
+ui_print "Done!";
+ui_print "Reboot and dont forget to drink a coffee";
