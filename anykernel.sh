@@ -40,7 +40,22 @@ dump_boot;
 # begin ramdisk changes
 
 # end ramdisk changes
-
 write_boot;
+
+mount -o remount,rw /vendor
+TARGET="/vendor/etc/init/hw/init.target.rc"
+if grep '/dev/cpuset/top-app/uclamp.max' "${TARGET}" > /dev/null; then
+    ui_print " " " - Skipping Uclamp tuning script..."
+else
+    if [[ -d "/data/adb/modules/uclamp_tuning" ]]; then
+        ui_print " " " - Updating Uclamp tuning module..." " "
+        rm -rf /data/adb/modules/uclamp_tuning
+    else
+        ui_print " " " - Installing Uclamp tuning module..." " "
+    fi
+    mkdir -p /data/adb/modules/uclamp_tuning
+    cp -rf uclamp_tuning/ /data/adb/modules/
+fi
+
 ## end install
 

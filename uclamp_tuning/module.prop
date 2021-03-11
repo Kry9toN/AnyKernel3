@@ -1,0 +1,6 @@
+id=uclamp_tuning
+name=Uclamp Tuning
+version=v1.0
+versionCode=11
+author=azrim
+description=Specific sample tunings for Uclamp
