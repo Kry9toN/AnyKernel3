@@ -20,3 +20,8 @@ echo 40 > /dev/cpuset/system-background/uclamp.max
 echo 0  > /dev/cpuset/system-background/uclamp.min
 echo 0  > /dev/cpuset/system-background/uclamp.boosted
 echo 0  > /dev/cpuset/system-background/uclamp.latency_sensitive
+
+echo 40 > /proc/sys/vm/dirty_ratio
+echo 60 > /proc/sys/vm/vfs_cache_pressure
+echo 85 > /proc/sys/vm/swappiness
+echo 3600 > /proc/sys/vm/stat_interval
