@@ -42,11 +42,5 @@ dump_boot;
 # end ramdisk changes
 write_boot;
 
-ui_print "Adding krypton module"
-rm -rf /data/adb/modules/perf;
-mkdir -p /data/adb/modules/perf;
-cp -rf perf/ /data/adb/modules/;
-ui_print "Good Job!"
-
 ## end install
 
